@@ -94,10 +94,7 @@ class VenvManager(tk.Frame):
         file_id = self.treeview.selection()[0]
         file = self.treeview.item(file_id)
         # check if the selected item is a file or directory
-        if file['values']:
-            file_path = file['values'][0]
-        else:
-            file_path = None
+        file_path = file['values'][0] if file['values'] else None
         file_name = file['text']
         menu = tk.Menu(self, tearoff=0)
         menu.add_command(label='Copy Selected Path', command=self.copy_path)
@@ -112,8 +109,7 @@ class VenvManager(tk.Frame):
     # copy path of tree node to clipboard
     def copy_path(self):
         file = self.treeview.selection()[0]
-        values = self.treeview.item(file, 'values')
-        if values:
+        if values := self.treeview.item(file, 'values'):
             file_name = os.path.abspath(os.path.join(*values))
             self.clipboard_clear()
             self.clipboard_append(f'"{file_name}"')
@@ -122,8 +118,7 @@ class VenvManager(tk.Frame):
     # open python file in venv
     def openin_venv(self):
         file = self.treeview.selection()[0]
-        values = self.treeview.item(file, 'values')
-        if values:
+        if values := self.treeview.item(file, 'values'):
             file_name = os.path.join(*values)
             folder_path = os.path.dirname(file_name)
             batch_folder_path = os.path.dirname(file_name)
@@ -146,8 +141,7 @@ class VenvManager(tk.Frame):
     # install requirements.txt
     def install_requirements(self):
         file = self.treeview.selection()[0]
-        values = self.treeview.item(file, 'values')
-        if values:
+        if values := self.treeview.item(file, 'values'):
             file_name = os.path.join(*values)
             folder_path = os.path.dirname(file_name)
             batch_folder_path = os.path.dirname(file_name)
@@ -206,8 +200,7 @@ class VenvManager(tk.Frame):
     # function to handle opening files from the file tree    
     def open_file(self, event):
         item = self.treeview.selection()[0]
-        values = self.treeview.item(item, 'values')
-        if values:
+        if values := self.treeview.item(item, 'values'):
             file_name = os.path.join(*values)
             folder_path = os.path.dirname(file_name)
             print(f'Opening file \033[96m{file_name}\033[0m...')
@@ -217,9 +210,10 @@ class VenvManager(tk.Frame):
 
     # function to create a new virtual environment
     def create_venv(self, event=None):
-        # prompt for virtual environment name
-        venv_name = tk.simpledialog.askstring('Create Virtual Environment', 'Enter a name for the new virtual environment:')
-        if venv_name:
+        if venv_name := tk.simpledialog.askstring(
+            'Create Virtual Environment',
+            'Enter a name for the new virtual environment:',
+        ):
             # create the venv in the venv manager directory
             venv_path = os.path.join(self.root_dir, venv_name)
             print(f'Creating \033[93m{venv_name}\033[0m virtual environment...')
